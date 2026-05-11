@@ -4,9 +4,8 @@ __pycache__/
 *.pyo
 *.pyd
 
-# 虚拟环境缓存
-lite_env/Lib/site-packages/__pycache__/
-lite_env/Scripts/__pycache__/
+# 虚拟环境
+lite_env/
 
 # 试卷文件（版权问题 + 文件过大）
 data/exams/试卷/
