@@ -1,23 +1,29 @@
-# Python
+# Python 缓存
 __pycache__/
 *.pyc
 *.pyo
-*.so
-.Python
-env/
-venv/
-pip-log.txt
-pip-delete-this-directory.txt
+*.pyd
 
-# 打包相关
-build/
-dist/
+# 虚拟环境缓存
+lite_env/Lib/site-packages/__pycache__/
+lite_env/Scripts/__pycache__/
+
+# 大文件（试卷包）
+*.zip
+*.7z
+*.rar
+试卷.zip
+
+# 临时文件
+*.tmp
+*.log
 *.spec
-
-# 本地配置（如果有）
-.env
-config_local.py
 
 # 系统文件
 .DS_Store
 Thumbs.db
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
