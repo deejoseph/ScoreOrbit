@@ -12,9 +12,7 @@ env/
 .env/
 
 # 试卷文件（版权原因 + 文件过大，不推送）
-data/biology/exams/
-data/physics/exams/
-data/chemistry/exams/
+data/
 
 # 试卷压缩包
 *.zip
