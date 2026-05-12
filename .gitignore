@@ -4,26 +4,44 @@ __pycache__/
 *.pyo
 *.pyd
 
-# 虚拟环境
+# 虚拟环境（不推送）
 lite_env/
+venv/
+.venv/
+env/
+.env/
 
-# 试卷文件（版权问题 + 文件过大）
-data/exams/试卷/
-data/exams/*.zip
-data/exams/*.7z
-试卷.zip
+# 试卷文件（版权原因 + 文件过大，不推送）
+data/biology/exams/
+data/physics/exams/
+data/chemistry/exams/
+
+# 试卷压缩包
+*.zip
+*.7z
+*.rar
 
 # 临时文件
-*.tmp
 *.log
+*.tmp
 *.spec
-*.bat
+*.bat.backup
 
 # 系统文件
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # IDE 文件
 .vscode/
 .idea/
 *.swp
+*.swo
+
+# Streamlit 配置（用户本地配置，不推送）
+.streamlit/
+
+# 本地测试文件
+test_*.py
+*_test.py
+debug_*.py

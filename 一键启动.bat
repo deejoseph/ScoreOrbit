@@ -1,41 +1,138 @@
 @echo off
 chcp 65001 >nul
-title ScoreOrbit 多学科合格考助手
+title ScoreOrbit Helper
 
+echo.
 echo ========================================
-echo   🎓 ScoreOrbit 多学科合格考助手
-echo   沪教版高中 | 生物 · 物理 · 化学
+echo    ScoreOrbit - Biology & Physics Exam Helper
 echo ========================================
 echo.
 
-:: 检查虚拟环境
-if exist "lite_env\Scripts\python.exe" (
-    echo ✅ 使用虚拟环境
-    set PYTHON=lite_env\Scripts\python.exe
-) else (
-    echo ⚠️ 未找到虚拟环境，使用系统Python
-    set PYTHON=python
-)
-
-:: 检查依赖
-%PYTHON% -c "import streamlit" >nul 2>&1
-if errorlevel 1 (
-    echo ❌ 缺少依赖包！
-    echo 请先双击「安装依赖.bat」安装
+:: Check if main.py exists
+if not exist "%~dp0main.py" (
+    echo [ERROR] main.py not found!
+    echo.
+    echo Please make sure you have extracted ALL files
+    echo The following files should be in this folder:
+    echo   - main.py
+    echo   - common/
+    echo   - subjects/
+    echo   - data/
+    echo.
     pause
     exit /b
 )
 
-echo ✅ 环境检查通过
+:: Auto detect Python 3.10
+set "PYTHON_CMD="
+
+for %%p in (
+    "C:\Python310\python.exe"
+    "C:\Program Files\Python310\python.exe"
+    "C:\Users\%USERNAME%\AppData\Local\Programs\Python\Python310\python.exe"
+) do (
+    if exist %%p (
+        set "PYTHON_CMD=%%~p"
+        goto :found
+    )
+)
+
+where python3.10.exe >nul 2>&1
+if not errorlevel 1 (
+    for /f "delims=" %%i in ('where python3.10.exe') do (
+        set "PYTHON_CMD=%%i"
+        goto :found
+    )
+)
+
+where python310.exe >nul 2>&1
+if not errorlevel 1 (
+    for /f "delims=" %%i in ('where python310.exe') do (
+        set "PYTHON_CMD=%%i"
+        goto :found
+    )
+)
+
+where python.exe >nul 2>&1
+if not errorlevel 1 (
+    for /f "delims=" %%i in ('where python.exe') do (
+        for /f "usebackq tokens=2" %%v in (`"%%i" --version 2^>^&1`) do (
+            echo %%v | findstr "3.10" >nul
+            if not errorlevel 1 (
+                set "PYTHON_CMD=%%i"
+                goto :found
+            )
+        )
+    )
+)
+
+:found
+if "%PYTHON_CMD%"=="" (
+    echo [ERROR] Python 3.10 not found!
+    echo.
+    echo Please install Python 3.10.11
+    echo Download: https://www.python.org/downloads/release/python-31011/
+    echo.
+    pause
+    exit /b
+)
+
+echo Using Python: %PYTHON_CMD%
+
+:: Set paths
+set "PROJECT_DIR=%~dp0"
+set "VENV_DIR=%PROJECT_DIR%lite_env"
+
+:: Virtual Environment
+if not exist "%VENV_DIR%\Scripts\python.exe" (
+    echo [1/3] Creating virtual environment...
+    "%PYTHON_CMD%" -m venv "%VENV_DIR%"
+    echo       Virtual environment created
+) else (
+    echo [1/3] Virtual environment exists, skipping
+)
+
+set "VENV_PYTHON=%VENV_DIR%\Scripts\python.exe"
+set "VENV_PIP=%VENV_DIR%\Scripts\pip.exe"
+
+:: Dependencies
+if not exist "%VENV_DIR%\installed.txt" (
+    echo [2/3] Installing dependencies (first time only)...
+    "%VENV_PIP%" install streamlit pandas python-docx -i https://pypi.tuna.tsinghua.edu.cn/simple --quiet
+    echo %date% %time% > "%VENV_DIR%\installed.txt"
+    echo       Dependencies installed
+) else (
+    echo [2/3] Dependencies already installed, skipping
+)
+
+:: Streamlit Config
+if not exist "%USERPROFILE%\.streamlit\config.toml" (
+    if not exist "%USERPROFILE%\.streamlit" mkdir "%USERPROFILE%\.streamlit"
+    (
+        echo [browser]
+        echo gatherUsageStats = false
+        echo serverAddress = "localhost"
+        echo serverPort = 8501
+    ) > "%USERPROFILE%\.streamlit\config.toml"
+)
+
+:: Release Port
+for /f "tokens=5" %%a in ('netstat -aon 2^>nul ^| find ":8501" ^| find "LISTENING"') do (
+    taskkill /f /pid %%a >nul 2>&1
+)
+
+:: Start
+echo [3/3] Starting ScoreOrbit...
 echo.
-echo 正在启动，请稍候...
-echo 启动后会自动打开浏览器
-echo 如果没有自动打开，请访问 http://localhost:8501
+echo Browser will open automatically...
+echo If not, visit http://localhost:8501
 echo.
 echo ========================================
 echo.
 
 start http://localhost:8501
-%PYTHON% -m streamlit run main.py
+"%VENV_PYTHON%" -m streamlit run main.py --server.address 127.0.0.1 --server.headless true
 
+echo.
+echo Application closed
 pause
