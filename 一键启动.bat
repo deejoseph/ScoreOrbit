@@ -1,21 +1,27 @@
 @echo off
 chcp 65001 >nul
-title ScoreOrbit 生物合格考助手
+title ScoreOrbit 多学科合格考助手
 
 echo ========================================
-echo   🧬 ScoreOrbit 生物合格考助手
-echo   沪教版高中生物 ^| 156个核心知识点
+echo   🎓 ScoreOrbit 多学科合格考助手
+echo   沪教版高中 | 生物 · 物理 · 化学
 echo ========================================
 echo.
 
-:: 使用虚拟环境中的 Python
-set PYTHON=%~dp0lite_env\Scripts\python.exe
-set STREAMLIT=%~dp0lite_env\Scripts\streamlit.exe
-
 :: 检查虚拟环境
-if not exist "%PYTHON%" (
-    echo ❌ 未找到 Python 环境！
-    echo 请确保 lite_env 文件夹完整
+if exist "lite_env\Scripts\python.exe" (
+    echo ✅ 使用虚拟环境
+    set PYTHON=lite_env\Scripts\python.exe
+) else (
+    echo ⚠️ 未找到虚拟环境，使用系统Python
+    set PYTHON=python
+)
+
+:: 检查依赖
+%PYTHON% -c "import streamlit" >nul 2>&1
+if errorlevel 1 (
+    echo ❌ 缺少依赖包！
+    echo 请先双击「安装依赖.bat」安装
     pause
     exit /b
 )
@@ -29,8 +35,7 @@ echo.
 echo ========================================
 echo.
 
-:: 启动
 start http://localhost:8501
-"%PYTHON%" -m streamlit run app_lite.py --server.address 127.0.0.1
+%PYTHON% -m streamlit run main.py
 
 pause
