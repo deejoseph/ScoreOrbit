@@ -1,6 +1,6 @@
 """
 ScoreOrbit 多学科合格考助手 - 统一入口
-沪教版高中 | 生物 · 物理 · 化学
+沪教版高中 | 生物 · 物理 · 化学 · 历史
 """
 import streamlit as st
 import sys
@@ -54,11 +54,17 @@ st.markdown("""
 st.sidebar.title("📚 ScoreOrbit")
 st.sidebar.info("""
 **版本**: v2.0  
-**学科**: 生物 · 物理  
-**数据**: 156个生物知识点 + 物理知识点  
+**学科**: 生物 · 物理 · 化学 · 历史 · 地理 · 政治  
+**数据**: 
+- 生物: 156个知识点
+- 物理: 85个知识点  
+- 化学: 22个知识点
+- 历史: 398个知识点
+- 地理: 43个知识点
+- 政治: 48个知识点
+
 **试卷**: 历年真题 + 模拟卷
 """)
-
 # 学科选择
 st.sidebar.markdown("---")
 st.sidebar.subheader("🎯 选择学科")
@@ -66,7 +72,7 @@ st.sidebar.subheader("🎯 选择学科")
 # 使用radio选择学科
 subject = st.sidebar.radio(
     "学科",
-    ["🧬 生物", "⚛️ 物理", "🧪 化学"],
+    ["🧬 生物", "⚛️ 物理", "🧪 化学", "📜 历史", "🌍 地理", "🏛️ 政治"],
     index=0,
     format_func=lambda x: x
 )
@@ -81,19 +87,19 @@ if subject == "🧬 生物":
 elif subject == "⚛️ 物理":
     from subjects.physics import show_physics
     show_physics()
-else:
-    st.info("🧪 化学学科正在开发中，敬请期待...")
-    st.markdown("""
-    ### 化学学科规划
+elif subject == "🧪 化学":
+    from subjects.chemistry import show_chemistry
+    show_chemistry()
+elif subject == "📜 历史":
+    from subjects.history import show_history
+    show_history()
+elif subject == "🌍 地理":
+    from subjects.geography import show_geography
+    show_geography()
+elif subject == "🏛️ 政治":
+    from subjects.politics import show_politics
+    show_politics()
     
-    预计包含内容：
-    - 必修一：物质及其变化、海水中的重要元素
-    - 必修二：化学反应与能量、有机化学基础
-    - 历年真题 + 模拟试卷
-    
-    🚀 开发中，近期上线！
-    """)
-
 # 页脚
 st.markdown("---")
 st.markdown(
